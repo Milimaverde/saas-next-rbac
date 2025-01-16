@@ -5,19 +5,45 @@ import {
   AbilityBuilder
 } from '@casl/ability';
 
-const actions = ['manage', 'invite', 'delete'] as const;
-const subjects = ['User', 'all'] as const;
-type AppAbilities = [
-  typeof actions[number],
-  typeof subjects[number] | ForcedSubject<Exclude<typeof subjects[number], 'all'>>
-];
+import { User } from './models/user'
+import { permissions } from './permissions'
+import { billingSubject } from './subjects/billing'
+import { inviteSubject } from './subjects/invite'
+import { organizationSubject } from './subjects/organization'
+import { projectSubject } from './subjects/project'
+import { userSubject } from './subjects/user'
+import { z } from 'zod';
 
-export type AppAbility = MongoAbility<AppAbilities>;
-export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>;
+export * from './models/organization'
+export * from './models/project'
+export * from './models/user'
 
-const { build, can, cannot } = new AbilityBuilder(createAppAbility);
+const appAbilitiesSchema = z.union([
+  projectSubject,
+  userSubject,
+  organizationSubject,
+  inviteSubject,
+  billingSubject,
+  z.tuple([z.literal('manage'), z.literal('all')]),
+])
+type AppAbilities = z.infer<typeof appAbilitiesSchema>
 
-can('invite', 'User');
-cannot('delete', 'User');
+export type AppAbility = MongoAbility<AppAbilities>
+export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 
-export const ability = build();
+export function defineAbilityFor(user: User) {
+  const builder = new AbilityBuilder(createAppAbility)
+
+  if (typeof permissions[user.role] !== 'function') {
+    throw new Error(`Permissions for role ${user.role} not found.`)
+  }
+
+  permissions[user.role](user, builder)
+
+  const ability = builder.build({
+    detectSubjectType(subject) {
+      return subject.__typename
+    },
+  })
+  return ability
+}
