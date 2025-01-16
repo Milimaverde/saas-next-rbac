@@ -1,6 +1,5 @@
 import { 
   createMongoAbility, 
-  ForcedSubject, 
   CreateAbility, 
   MongoAbility,
   AbilityBuilder
