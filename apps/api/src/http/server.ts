@@ -1,6 +1,7 @@
 import fastifyCors from "@fastify/cors";
 import fastify from "fastify";
 import fastifySwagger from "@fastify/swagger";
+import fastifyJwt from "@fastify/jwt";
 import fastifySwaggerUI from '@fastify/swagger-ui'
 import {
   serializerCompiler,
@@ -31,8 +32,11 @@ app.register(fastifySwaggerUI, {
   routePrefix: '/docs',
 })
 
-app.register(fastifyCors)
+app.register(fastifyJwt, {
+  secret: 'my-secret-jwt',
+})
 
+app.register(fastifyCors)
 app.register(routeRegister)
 
 app.listen({ port: 3000 }).then(() => {
