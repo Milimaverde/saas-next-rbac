@@ -4,6 +4,7 @@ import { authenticateWithPassword } from "./auth/authenticate-with-password"
 import { getProfile } from "./auth/get-profile"
 import { resetPassword } from "./auth/reset-password"
 import { requestPasswordRecover } from "./auth/request-password-recover"
+import { authenticateWithGithub } from "./auth/authenticate-with-github"
 
 
 export const routeRegister = (app: FastifyInstance) => {
@@ -12,5 +13,6 @@ export const routeRegister = (app: FastifyInstance) => {
   app.register(getProfile)
   app.register(requestPasswordRecover)
   app.register(resetPassword)
+  app.register(authenticateWithGithub)
 }
 
