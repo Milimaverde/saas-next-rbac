@@ -11,6 +11,7 @@ import {
 } from 'fastify-type-provider-zod'
 
 import { routeRegister } from "./routes";
+import { env } from "@saas/env";
 
 const app = fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -33,12 +34,12 @@ app.register(fastifySwaggerUI, {
 })
 
 app.register(fastifyJwt, {
-  secret: 'my-secret-jwt',
+  secret: env.JWT_SECRET,
 })
 
 app.register(fastifyCors)
 app.register(routeRegister)
 
-app.listen({ port: 3000 }).then(() => {
+app.listen({ port: env.SERVER_PORT }).then(() => {
   console.log('Server running')
 })
