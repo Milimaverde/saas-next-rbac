@@ -19,18 +19,20 @@ app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
 
 app.register(fastifySwagger, {
-  swagger: {
+  openapi: {
     info: {
       title: 'Next.js SaaS',
       description: 'Full-stack SaaS with multi-tenant & RBAC.',
       version: '1.0.0',
     },
-    securityDefinitions: {
-      Authorization: {
-        type: 'apiKey',
-        in: 'header',
-        name: 'Authorization',
-        description: 'JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"',
+    servers: [],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
       },
     },
   },
